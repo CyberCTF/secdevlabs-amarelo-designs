@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://www.isoloom.com/schema/v1.json
+# Amarelo Designs (secDevLabs, by Globo.com) as an Isoloom spec: a Flask design studio site that
+# loads its session cookie with pickle, a Software and Data Integrity Failure (insecure
+# deserialization). Vendored unchanged in build/app/app/ (the app folder
+# owasp-top10-2021-apps/a8/amarelo-designs of secDevLabs), built by an overlay of upstream's
+# Dockerfile. Upstream also publishes port 9051 for the bind shell of its walkthrough; it is
+# not declared here (nothing listens on it until the exploit, and Isoloom waits for every
+# declared port), so a shell comes back as a reverse shell or from inside the lab network.
+# `isoloom generate`, then `isoloom run docker`.
+version: 1
+name: secdevlabs-amarelo-designs
+
+networks:
+  lab: { cidr: 10.60.108.0/24, internet: false }
+
+machines:
+  app:
+    networks: { lab: 10 }
+    services: [{ port: 5000, name: web, http: true, publish: 10008 }]
+    resources: { cpus: 1, memory_mb: 256 }
+    docker:
+      build: build/app
+
+checks:
+  - name: the site answers
+    http: http://app:5000/
+    wait: 120
+  - name: the admin session cookie is a pickle that /user loads
+    script: checks/session.sh
+
+message: |
+  Amarelo Designs answers at http://localhost:{{ machines.app.services.0.publish }}/. Log in to
+  /admin, then look at the cookie you get and what /user does with it.

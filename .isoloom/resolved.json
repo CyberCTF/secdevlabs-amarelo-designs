@@ -1,0 +1,144 @@
+{
+  "generated_by_isoloom": "from isoloom.yml; don't edit: change the spec and run `isoloom generate` (`isoloom check` fails when this file is out of date)",
+  "resolved_version": 1,
+  "name": "secdevlabs-amarelo-designs",
+  "instance": null,
+  "inputs": [],
+  "networks": {
+    "lab": {
+      "cidr": "10.60.108.0/24",
+      "docker_cidr": "10.60.108.0/24",
+      "internet": false,
+      "gateway": null,
+      "gateway_address": "10.60.108.1",
+      "router": null,
+      "controller": "10.60.108.253"
+    }
+  },
+  "reach": [],
+  "machines": {
+    "app": {
+      "access": false,
+      "supplied": false,
+      "shapes": [
+        "docker"
+      ],
+      "arch": "amd64",
+      "os": null,
+      "windows": false,
+      "addresses": {
+        "lab": "10.60.108.10"
+      },
+      "docker_addresses": {
+        "lab": "10.60.108.10"
+      },
+      "services": [
+        {
+          "port": 5000,
+          "name": "web",
+          "http": true,
+          "publish": 10008
+        }
+      ],
+      "depends_on": [],
+      "inputs": [],
+      "volumes": {},
+      "resources": {
+        "cpus": 1,
+        "memory_mb": 256,
+        "disk_gb": 20
+      },
+      "gateway_of": [],
+      "routes": [],
+      "default_gateway": null,
+      "offline": true
+    }
+  },
+  "start_order": [
+    "app"
+  ],
+  "clones": {},
+  "tools": {},
+  "groups": {},
+  "router": null,
+  "controller": {
+    "addresses": {
+      "lab": "10.60.108.253"
+    }
+  },
+  "published": [
+    {
+      "machine": "app",
+      "port": 5000,
+      "host_port": 10008
+    }
+  ],
+  "targets": {
+    "possible": [
+      "docker",
+      "hosted",
+      "docker-vm",
+      "cloud-docker",
+      "kubernetes"
+    ],
+    "generated": [
+      "docker",
+      "hosted",
+      "docker-vm",
+      "cloud-docker",
+      "kubernetes"
+    ],
+    "refused": {},
+    "not_possible": {
+      "hybrid": "only when some machines are containers and others are VMs",
+      "vagrant": "needs `vm:` on app",
+      "proxmox": "needs `vm:` on app",
+      "cloud-vm": "needs `vm:` on app",
+      "external": "needs `external:` on app"
+    }
+  },
+  "checks": {
+    "default_position": "networks",
+    "positions": [
+      {
+        "position": "networks",
+        "machine": null,
+        "runner": "isoloom-check",
+        "checks": [
+          {
+            "name": "the site answers",
+            "derived": false,
+            "kind": "http",
+            "target": "http://app:5000/",
+            "expect": "200",
+            "wait": 120
+          },
+          {
+            "name": "the admin session cookie is a pickle that /user loads",
+            "derived": false,
+            "kind": "script",
+            "target": "checks/session.sh",
+            "expect": "",
+            "wait": 0
+          }
+        ]
+      },
+      {
+        "position": "app",
+        "machine": "app",
+        "runner": "isoloom-check-app",
+        "checks": [
+          {
+            "name": "no internet from app",
+            "derived": true,
+            "kind": "http",
+            "target": "http://1.1.1.1/",
+            "expect": "blocked",
+            "wait": 0
+          }
+        ]
+      }
+    ]
+  },
+  "message": "Amarelo Designs answers at http://localhost:10008/. Log in to\n/admin, then look at the cookie you get and what /user does with it.\n"
+}
