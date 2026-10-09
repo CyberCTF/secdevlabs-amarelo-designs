@@ -4,11 +4,5 @@
   "question": "Craft a session cookie that makes the server run your command, and get a shell on it.",
   "category": "WEB",
   "difficulty": 3,
-  "evidence_kind": "SECRET",
-  "capabilities": [
-    "insecure-deserialization",
-    "python-pickle",
-    "remote-code-execution",
-    "data-integrity-failure"
-  ]
+  "evidence_kind": "SECRET"
 }
