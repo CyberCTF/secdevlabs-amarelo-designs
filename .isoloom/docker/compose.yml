@@ -18,8 +18,13 @@ services:
     networks:
       lab:
         ipv4_address: 10.60.108.10
+    environment:
+      CTF_FLAG_MAIN: ${CTF_FLAG_MAIN:-}
     ports:
     - ${ISOLOOM_PUBLISH_ADDRESS:-127.0.0.1}:${ISOLOOM_PUBLISH_FIXED:+10008}:5000
+    volumes:
+    - app-ctf:/ctf
+    - isoloom-probe-amd64:/.isoloom-probe:ro
     healthcheck:
       test:
       - CMD
@@ -31,8 +36,6 @@ services:
       timeout: 3s
       retries: 60
       start_period: 10s
-    volumes:
-    - isoloom-probe-amd64:/.isoloom-probe:ro
     depends_on:
       isoloom-probe-amd64:
         condition: service_completed_successfully
@@ -69,6 +72,26 @@ services:
     labels:
       isoloom.managed: 'true'
       isoloom.environment: secdevlabs-amarelo-designs
+  app-init-1:
+    image: isoloom/secdevlabs-amarelo-designs-app
+    entrypoint:
+    - /bin/sh
+    - /isoloom/init/flag.sh
+    volumes:
+    - ../../ctf/flag.sh:/isoloom/init/flag.sh:ro
+    - app-ctf:/ctf
+    network_mode: service:app
+    environment:
+      CTF_FLAG_MAIN: ${CTF_FLAG_MAIN:-}
+    depends_on:
+      app:
+        condition: service_healthy
+      app-routes:
+        condition: service_healthy
+    restart: no
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-amarelo-designs
   isoloom-check:
     image: curlimages/curl:8.11.1
     profiles:
@@ -88,6 +111,8 @@ services:
     depends_on:
       app:
         condition: service_healthy
+      app-init-1:
+        condition: service_completed_successfully
       app-routes:
         condition: service_healthy
     labels:
@@ -106,6 +131,8 @@ services:
     depends_on:
       app:
         condition: service_healthy
+      app-init-1:
+        condition: service_completed_successfully
       app-routes:
         condition: service_healthy
     labels:
@@ -135,6 +162,10 @@ networks:
       isoloom.managed: 'true'
       isoloom.environment: secdevlabs-amarelo-designs
 volumes:
+  app-ctf:
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: secdevlabs-amarelo-designs
   isoloom-probe-amd64:
     labels:
       isoloom.managed: 'true'

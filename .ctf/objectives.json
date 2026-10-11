@@ -1,0 +1,52 @@
+{
+  "objectives": [
+    {
+      "key": "main",
+      "title": "Read the flag",
+      "prompt": "Get code execution through the session cookie and read /ctf/flag.",
+      "check": {
+        "evidence": "SECRET",
+        "format": "FLAG{%s}"
+      },
+      "dev": "FLAG{dev-secdevlabs-amarelo-designs}",
+      "hints": [
+        "Decode your session cookie after logging in: what kind of data is it?",
+        "Read about insecure deserialization with Python's pickle module."
+      ],
+      "steps": [
+        {
+          "key": "module",
+          "title": "Identify the format",
+          "prompt": "Which Python serialization module produced the cookie?",
+          "check": {
+            "answer": [
+              "pickle"
+            ]
+          }
+        },
+        {
+          "key": "route",
+          "title": "Find the sink",
+          "prompt": "Which route deserializes the cookie? (path)",
+          "check": {
+            "answer": [
+              "/user",
+              "user"
+            ]
+          }
+        },
+        {
+          "key": "class",
+          "title": "Name the weakness",
+          "prompt": "What class of vulnerability is this?",
+          "check": {
+            "answer": [
+              "insecure deserialization",
+              "deserialization"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

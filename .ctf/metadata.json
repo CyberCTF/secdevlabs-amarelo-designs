@@ -1,7 +1,7 @@
 {
   "title": "secDevLabs Amarelo Designs",
   "description": "A Flask site for a design studio with an admin area. After login, the session cookie is a base64-encoded Python pickle, and the /user page unpickles whatever cookie it receives.",
-  "question": "Craft a session cookie that makes the server run your command, and get a shell on it.",
+  "question": "Exploit the insecure deserialization of the session cookie to run a command on the server and read /ctf/flag.",
   "category": "WEB",
   "difficulty": 3,
   "evidence_kind": "SECRET"
